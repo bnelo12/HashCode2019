@@ -1,5 +1,6 @@
 #!/bin/python
 from typing import List, Optional, Set
+import random
 import sys
 import os.path
 import os
@@ -53,8 +54,10 @@ def get_score(photos: List[Photo]) -> int:
 class Slide:
     _left: Photo
     _right: Optional[Photo]
+    dual: bool = False
+    tags: Set[str]
 
-    def __init__(self, left: Photo, right: Optional[Photo]) -> None:
+    def __init__(self, left: Photo, right: Optional[Photo] = None) -> None:
         self.set_photos(left, right)
 
     def get_left(self):
@@ -79,6 +82,7 @@ class Slide:
                     "Cannot create Slide with a single vertical photo")
 
             self._left = left
+            self.tags = left.tags
             return
 
         # Ensure both left and right is vertical
@@ -93,6 +97,14 @@ class Slide:
 
         self._left = left
         self._right = right
+        self.tags = left.tags.union(right.tags)
+        self.dual = True
+
+    def __str__(self):
+        if not self.dual:
+            return str(self._left.id)
+
+        return "{} {}".format(self._left.id, self._right.id)
 
 
 def parse_input(filename: str) -> List[Photo]:
@@ -187,7 +199,7 @@ def solve(photos_in):
         photo_set = set(photos)
         result = dfs([], photo_set)
         score += result[0]
-        [x.id for x in result[1]]
+        # [x.id for x in result[1]]
         path += result[1]
     # print("The score: " + str(score))
 
@@ -205,22 +217,23 @@ def split_list(l):
 
 def output(filename, photos):
     slide_count: int = 0
-    prev: Optional[Photo] = None
+    # prev: Optional[Photo] = None
     slides = []
 
     f = open(filename, "w")
 
     for photo in photos:
-        if photo.is_vertical() and prev is None:
-            prev = photo
-            continue
+        slides.append(str(photo))
+        # if photo.is_vertical() and prev is None:
+        #     prev = photo
+        #     continue
 
-        if prev is None:
-            slides.append("{}".format(photo.id))
-        else:
-            slides.append("{} {}".format(prev.id, photo.id))
+        # if prev is None:
+        #     slides.append("{}".format(photo.id))
+        # else:
+        #     slides.append("{} {}".format(prev.id, photo.id))
 
-        prev = None
+        # prev = None
         slide_count += 1
 
     f.write("{}\n".format(slide_count))
@@ -234,6 +247,22 @@ def find_distinct_tags(photos: List[Photo]) -> Set[str]:
     all_tags = [p.tags for p in photos]
     tags.update(*all_tags)
     return tags
+
+
+def sort_photos(photos: List[Photo]) -> List[Slide]:
+    slides: List[Slide] = list(map(
+        Slide, filter(lambda p: p.is_horizontal(), photos)))
+    
+    vertical_photos = list(filter(lambda p: p.is_vertical(), photos))
+    for i in range(0, len(vertical_photos), 2):
+        left: Photo = vertical_photos[i]
+        right: Photo = vertical_photos[i+1]
+        slide = Slide(left, right)
+        slides.append(slide)
+
+    random.shuffle(slides)
+
+    return slides
 
 
 def main():
@@ -260,12 +289,15 @@ def main():
     distinct_tags = find_distinct_tags(photos)
     print("Took {}s to find {} distinct tags".format(
         time.time() - prev_time, len(distinct_tags)))
+    
+    # Sort photos
+    slides = sort_photos(photos)
 
     # Solve the task
     prev_time = time.time()
-    score, path = solve(photos)
-    print("Took {}s to solve {} photos".format(
-        time.time() - prev_time, len(photos)))
+    score, path = solve(slides)
+    print("Took {}s to solve {} slides".format(
+        time.time() - prev_time, len(slides)))
 
     # Print the score
     print("Score of solution: {}".format(score))
