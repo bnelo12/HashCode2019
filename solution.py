@@ -211,7 +211,7 @@ def split_list(l):
     n = 5
     out = [l[x*n:x*n+n] for x in range(floor(len(l)/n))]
     # out += l[:(len(l)%n)+1]
-    out.append(l[:(len(l)%n)+1])
+    # out.append(l[-((len(l)%n)+1):])
     return out
 
 
