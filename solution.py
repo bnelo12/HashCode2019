@@ -2,6 +2,7 @@ from typing import List
 import sys
 import os.path
 import os
+import time
 
 
 class Photo:
@@ -96,10 +97,17 @@ def main():
         print("File {} doesn't exist".format(filename))
         return
 
+    prev_time: time.time = time.time()
+
     photos: List[Photo] = parse_input(filename)
 
+    time_taken = time.time() - prev_time
+
+    print("Took {}s to parse {} photos".format(time_taken, len(photos)))
+
     for photo in photos:
-        print(photo)
+        # print(photo)
+        pass
 
 
 if __name__ == "__main__":
