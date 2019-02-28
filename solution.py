@@ -208,7 +208,7 @@ def output(filename, photos):
         if prev_id is None:
             slides.append("{}".format(photo.id))
         else:
-            slides.append("{} {}".format(photo.id, prev_id))
+            slides.append("{} {}".format(prev_id, photo.id))
 
         prev_id = None
         slide_count += 1
