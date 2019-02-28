@@ -63,8 +63,8 @@ def parse_input(filename: str) -> List[Photo]:
 
         # Ensure size is correct
         if len(tags) != expected_tag_count:
-            print("Expected {} tags, got {} tags",
-                  expected_tag_count, len(tags))
+            print("Expected {} tags, got {} tags in line {}",
+                  expected_tag_count, len(tags)), line
             f.close()
             os.exit(1)
             return
