@@ -237,26 +237,28 @@ def main():
 
     solution_filename: str = "solution_" + filename
 
+    # Parse photos
     prev_time: time.time = time.time()
     photos: List[Photo] = parse_input(filename)
     print("Took {}s to parse {} photos".format(
         time.time() - prev_time, len(photos)))
 
+    # Find distinct tags
     prev_time = time.time()
     distinct_tags = find_distinct_tags(photos)
     print("Took {}s to find {} distinct tags".format(
         time.time() - prev_time, len(distinct_tags)))
 
+    # Solve the task
     prev_time = time.time()
     score, path = solve(photos)
     print("Took {}s to solve {} photos".format(
         time.time() - prev_time, len(photos)))
 
+    # Print the score
     print("Score of solution: {}".format(score))
-    for photo in photos:
-        # print(photo)
-        pass
 
+    # Write the solution
     output(solution_filename, path)
 
 
