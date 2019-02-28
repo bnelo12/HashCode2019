@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 import sys
 import os.path
 import os
@@ -8,13 +8,13 @@ import time
 class Photo:
     _is_horiz: bool
 
-    tags: List[str]
+    tags: Set[str]
     id: int
 
     def __init__(self, id: int, horizontal: bool, tags: List[str]) -> None:
         self.id = id
         self._is_horiz = horizontal
-        self.tags = tags
+        self.tags = set(tags)
 
     def is_horizontal(self) -> bool:
         return self._is_horiz
@@ -25,7 +25,7 @@ class Photo:
     def __str__(self):
         return "Photo(id={}, horizontal={}, tags=[{}])".format(
             self.id, self.is_horizontal(),
-            ", ".join(self.tags)
+            ", ".join(list(self.tags))
         )
 
 
