@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import sys
 import os.path
 import os
@@ -27,6 +27,51 @@ class Photo:
             self.id, self.is_horizontal(),
             ", ".join(self.tags)
         )
+
+
+class Slide:
+    _left: Photo
+    _right: Optional[Photo]
+
+    def __init__(self, left: Photo, right: Optional[Photo]) -> None:
+        self.set_photos(left, right)
+
+    def get_left(self):
+        return self._left
+
+    def get_right(self):
+        return self._right
+
+    def set_photos(self, left: Photo, right: Optional[Photo]) -> None:
+        """set_photos allows you to modify a slide"""
+
+        # Ensure left exists
+        if left is None:
+            assert AssertionError(
+                "Left photo cannot be None, Right is {}".format(right))
+
+        # If only one photo
+        if right is None:
+            # If no right hand side, left must be vertical
+            if left.is_vertical():
+                assert AssertionError(
+                    "Cannot create Slide with a single vertical photo")
+
+            self._left = left
+            return
+
+        # Ensure both left and right is vertical
+        if left.is_horizontal():
+            assert AssertionError(
+                "Left cannot be horizontal. Left: {}, Right: {}".format(
+                    left, right))
+        elif right.is_horizontal():
+            assert AssertionError(
+                "Right cannot be horizontal. Left: {}, Right: {}".format(
+                    left, right))
+
+        self._left = left
+        self._right = right
 
 
 def parse_input(filename: str) -> List[Photo]:
