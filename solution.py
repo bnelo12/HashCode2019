@@ -34,6 +34,24 @@ class Photo:
         )
 
 
+def get_score(photos: List[Photo]) -> int:
+    if len(photos) == 0:
+        return 0
+
+    photos = photos.copy()
+
+    curr: Photo = photos.pop(0)
+    score = 0
+    while len(photos) > 0:
+        p: Photo = photos.pop(0)
+
+        inter = curr.tags.intersection(p.tags)
+        score += min(map(len,[inter, p.tags - inter, curr.tags - inter]))
+        curr = p
+
+    return score
+
+
 class Slide:
     _left: Photo
     _right: Optional[Photo]
@@ -171,6 +189,7 @@ def main():
 
     print("Took {}s to parse {} photos".format(time_taken, len(photos)))
 
+    print("Score of input: {}".format(get_score(photos)))
     for photo in photos:
         # print(photo)
         pass
