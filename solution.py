@@ -46,12 +46,12 @@ def get_score(photos: List[Photo]) -> int:
 
     photos = photos.copy()
 
-    curr: Photo = photos[0]
+    prev: Photo = photos[0]
     score = 0
     for p in photos[1:]:
-        inter = curr.tags.intersection(p.tags)
-        score += min(map(len, [inter, p.tags - inter, curr.tags - inter]))
-        curr = p
+        inter = prev.tags.intersection(p.tags)
+        score += min(map(len, [inter, p.tags - inter, prev.tags - inter]))
+        prev = p
 
     return score
 
