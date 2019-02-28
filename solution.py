@@ -6,14 +6,8 @@ import os
 import time
 from math import floor
 
-
-# current_path = []
-# current_set = set()
-# best_path = []
-# best_score = 0
-
 sys.setrecursionlimit(2000)
-total = 0
+# total = 0
 
 
 class Photo:
@@ -169,9 +163,21 @@ def dfs(current_path, photos):
         t = photos.copy()
         t.remove(photo)
         assert(t is not None)
+        # if current_path[-1].is_vertical() and require_vertical:
+        #     continue
+        # choices.append(dfs(current_path + [photo], t, photo.is_vertical() != require_vertical))
         choices.append(dfs(current_path + [photo], t))
-
     return max(choices, key=lambda x: x[0])
+
+def dfs2(current_path, remaining_paths):
+    if len(remaining_paths) == 0:
+        return (get_score(current_path), current_path)
+
+    choices = []
+    for path in remaining_paths:
+        t = remaining_paths.copy()
+        t.remove(path)
+        choices.append(dfs2())
 
 
 def solve(photos_in):
@@ -184,11 +190,17 @@ def solve(photos_in):
         [x.id for x in result[1]]
         path += result[1]
     # print("The score: " + str(score))
-    return score, path
+
+    return get_score(path), path
+    # return score, path
 
 
 def split_list(l):
-    return [l[x:x+5] for x in range(floor(len(l)/5))]
+    n = 5
+    out = [l[x*n:x*n+n] for x in range(floor(len(l)/n))]
+    # out += l[:(len(l)%n)+1]
+    out.append(l[:(len(l)%n)+1])
+    return out
 
 
 def output(filename, photos):
