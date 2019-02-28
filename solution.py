@@ -1,14 +1,19 @@
+#!/bin/python
 from typing import List, Optional, Set
 import sys
 import os.path
 import os
 import time
+from math import *
 
 
 # current_path = []
 # current_set = set()
 # best_path = []
 # best_score = 0
+
+sys.setrecursionlimit(2000)
+total = 0
 
 class Photo:
     _is_horiz: bool
@@ -155,19 +160,35 @@ def parse_input(filename: str) -> List[Photo]:
 
 
 def dfs(current_path, photos):
-    if photos == []:
-        return getScore(current_path), current_path
+    global total
+    if len(photos) == 0:
+        return (get_score(current_path), current_path)
+
     choices = []
     for photo in photos:
-        choices.append(dfs(current_path + [photo], photos.copy().remove(photo)))
+        t = photos.copy()
+        t.remove(photo)
+        assert(t != None)
+        choices.append(dfs(current_path + [photo], t))
 
-    best = 0
-    best_path = []
-    for score, path in choices:
-        if score > best:
-            best = score
-            best_path = path
-    return best, best_path
+    return max(choices, key=lambda x: x[0])
+
+
+def solve(photos_in):
+    score = 0
+    path = []
+    for photos in split_list(photos_in):
+        photo_set = set(photos)
+        result = dfs([], photo_set)
+        score += result[0]
+        [x.id for x in result[1]]
+        path += result[1]
+    # print("The score: " + str(score))
+    return score, path
+
+
+def split_list(l):
+    return [l[x:x+5] for x in range(floor(len(l)/5))]
 
 
 def main():
@@ -185,11 +206,13 @@ def main():
 
     photos: List[Photo] = parse_input(filename)
 
+    score, path = solve(photos)
+
     time_taken = time.time() - prev_time
 
     print("Took {}s to parse {} photos".format(time_taken, len(photos)))
 
-    print("Score of input: {}".format(get_score(photos)))
+    print("Score of input: {}".format(score))
     for photo in photos:
         # print(photo)
         pass
