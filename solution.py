@@ -4,7 +4,7 @@ import sys
 import os.path
 import os
 import time
-from math import *
+from math import floor
 
 
 # current_path = []
@@ -14,6 +14,7 @@ from math import *
 
 sys.setrecursionlimit(2000)
 total = 0
+
 
 class Photo:
     _is_horiz: bool
@@ -51,7 +52,7 @@ def get_score(photos: List[Photo]) -> int:
         p: Photo = photos.pop(0)
 
         inter = curr.tags.intersection(p.tags)
-        score += min(map(len,[inter, p.tags - inter, curr.tags - inter]))
+        score += min(map(len, [inter, p.tags - inter, curr.tags - inter]))
         curr = p
 
     return score
@@ -100,6 +101,7 @@ class Slide:
 
         self._left = left
         self._right = right
+
 
 def parse_input(filename: str) -> List[Photo]:
     # print(filename)
@@ -168,7 +170,7 @@ def dfs(current_path, photos):
     for photo in photos:
         t = photos.copy()
         t.remove(photo)
-        assert(t != None)
+        assert(t is not None)
         choices.append(dfs(current_path + [photo], t))
 
     return max(choices, key=lambda x: x[0])
