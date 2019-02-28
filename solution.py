@@ -4,12 +4,16 @@ import random
 import sys
 import os.path
 import os
+from sklearn.cluster import KMeans
+# from sklearn.decomposition import *
 import time
+import numpy as np
 from math import floor
 
 sys.setrecursionlimit(2000)
 # total = 0
 
+tags = {}
 
 class Photo:
     _is_horiz: bool
@@ -39,8 +43,6 @@ def get_score(photos: List[Photo]) -> int:
     if len(photos) == 0:
         return 0
 
-    photos = photos.copy()
-
     prev: Photo = photos[0]
     score = 0
     for p in photos[1:]:
@@ -49,6 +51,62 @@ def get_score(photos: List[Photo]) -> int:
         prev = p
 
     return score
+
+def expected_get_score(Photo):
+    if len(photos) == 0:
+        return 0
+
+    prev = photos[0]
+    score = 0
+    for p in photos[1:]:
+        inter = prev*p
+        score += min(map(sum, [inter, p.tags - inter, prev.tags - inter]))
+        # score += min(map(len, [inter, p.tags - inter, prev.tags - inter]))
+        prev = p
+
+    return score
+
+def tag_vector(photos):
+    tags = set()
+
+    for photo in photos:
+        for tag in photo.tags:
+            tags.add(tag)
+
+    tags = list(tags)
+    tag_dict = {}
+    tag_vector = []
+
+    for i in range(len(tags)):
+        tag_dict[tags[i]] = i
+
+    for photo in photos:
+        vector = np.zeros(len(tags))
+        for tag in photo.tags:
+            vector[tag_dict[tag]] = 1
+        tag_vector.append(vector)
+
+    tag_vector = np.asarray(tag_vector)
+
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(tag_vector)
+    p = kmeans.predict(tag_vector)
+    print(p[0])
+    
+
+def tag_frequency(photos):
+    global tags
+    tags = {}
+    for photo in photos:
+        for tag in photo.tags:
+            if tag in tags:
+                tags[tag] += 1
+            else:
+                tags[tag] = 1
+
+
+
+# class ExemplarPhoto:
+#     def __init__(self, tags):
 
 
 class Slide:
@@ -264,7 +322,6 @@ def sort_photos(photos: List[Photo]) -> List[Slide]:
 
     return slides
 
-
 def main():
     if len(sys.argv) != 2:
         print("Please provide an input file as the first argument")
@@ -292,6 +349,9 @@ def main():
     
     # Sort photos
     slides = sort_photos(photos)
+
+    print("Tag Vector")
+    tag_vector(photos)
 
     # Solve the task
     prev_time = time.time()
