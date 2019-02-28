@@ -228,20 +228,24 @@ def main():
         print("File {} doesn't exist".format(filename))
         return
 
+    solution_filename: str = "solution_" + filename
+
     prev_time: time.time = time.time()
-
     photos: List[Photo] = parse_input(filename)
+    print("Took {}s to parse {} photos".format(
+        time.time() - prev_time, len(photos)))
 
+    prev_time = time.time()
     score, path = solve(photos)
+    print("Took {}s to solve {} photos".format(
+        time.time() - prev_time, len(photos)))
 
-    time_taken = time.time() - prev_time
-
-    print("Took {}s to parse {} photos".format(time_taken, len(photos)))
-
-    print("Score of input: {}".format(score))
+    print("Score of solution: {}".format(score))
     for photo in photos:
         # print(photo)
         pass
+
+    output(solution_filename, path)
 
 
 if __name__ == "__main__":
