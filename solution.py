@@ -195,22 +195,22 @@ def split_list(l):
 
 def output(filename, photos):
     slide_count: int = 0
-    prev_id: Optional[int] = None
+    prev: Optional[Photo] = None
     slides = []
 
     f = open(filename, "w")
 
     for photo in photos:
-        if photo.is_vertical() and prev_id is None:
-            prev_id = photo.id
+        if photo.is_vertical() and prev is None:
+            prev = photo
             continue
 
-        if prev_id is None:
+        if prev is None:
             slides.append("{}".format(photo.id))
         else:
-            slides.append("{} {}".format(prev_id, photo.id))
+            slides.append("{} {}".format(prev.id, photo.id))
 
-        prev_id = None
+        prev = None
         slide_count += 1
 
     f.write("{}\n".format(slide_count))
