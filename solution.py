@@ -191,6 +191,32 @@ def split_list(l):
     return [l[x:x+5] for x in range(floor(len(l)/5))]
 
 
+def output(filename, photos):
+    slide_count: int = 0
+    prev_id: Optional[int] = None
+    slides = []
+
+    f = open(filename, "w")
+
+    for photo in photos:
+        if photo.is_vertical() and prev_id is None:
+            prev_id = photo.id
+            continue
+
+        if prev_id is None:
+            slides.append("{}".format(photo.id))
+        else:
+            slides.append("{} {}".format(photo.id, prev_id))
+
+        prev_id = None
+        slide_count += 1
+
+    f.write("{}\n".format(slide_count))
+    f.write("\n".join(slides))
+    f.flush()
+    f.close()
+
+
 def main():
     if len(sys.argv) != 2:
         print("Please provide an input file as the first argument")
