@@ -5,6 +5,11 @@ import os
 import time
 
 
+# current_path = []
+# current_set = set()
+# best_path = []
+# best_score = 0
+
 class Photo:
     _is_horiz: bool
 
@@ -29,12 +34,14 @@ class Photo:
         )
 
 
+
 def parse_input(filename: str) -> List[Photo]:
     # print(filename)
     f = open(filename)
 
     expected_entry_count: int = None
     photos: List[Photo] = []
+
     current_id: int = 0
 
     for line in f.read().splitlines():
@@ -84,6 +91,22 @@ def parse_input(filename: str) -> List[Photo]:
               expected_entry_count, len(photos))
 
     return photos
+
+
+def dfs(current_path, photos):
+    if photos == []:
+        return getScore(current_path), current_path
+    choices = []
+    for photo in photos:
+        choices.append(dfs(current_path + [photo], photos.copy().remove(photo)))
+
+    best = 0
+    best_path = []
+    for score, path in choices:
+        if score > best:
+            best = score
+            best_path = path
+    return best, best_path
 
 
 def main():
