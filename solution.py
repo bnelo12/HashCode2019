@@ -217,6 +217,13 @@ def output(filename, photos):
     f.close()
 
 
+def find_distinct_tags(photos: List[Photo]) -> Set[str]:
+    tags = set()
+    all_tags = [p.tags for p in photos]
+    tags.update(*all_tags)
+    return tags
+
+
 def main():
     if len(sys.argv) != 2:
         print("Please provide an input file as the first argument")
@@ -234,6 +241,11 @@ def main():
     photos: List[Photo] = parse_input(filename)
     print("Took {}s to parse {} photos".format(
         time.time() - prev_time, len(photos)))
+
+    prev_time = time.time()
+    distinct_tags = find_distinct_tags(photos)
+    print("Took {}s to find {} distinct tags".format(
+        time.time() - prev_time, len(distinct_tags)))
 
     prev_time = time.time()
     score, path = solve(photos)
